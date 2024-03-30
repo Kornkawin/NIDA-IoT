@@ -1,0 +1,16 @@
+terminal 1
+รันคำสั่ง start mosquitto service ของเครื่อง mac m1 ที่ใช้ homebrew ในการติดตั้ง mosquitto
+/opt/homebrew/opt/mosquitto/sbin/mosquitto -c <mosquitto_config_file>
+
+terminal 2
+ีรัน python ที่ใช้เป็น pi-server สำหรับ control ไฟ โดยจะเป็น client ที่ subscribe ไปยัง mosquitto broker อีกที
+python3 light_control_sim.py
+
+terminal 3
+รันคำสั่ง sub เพื่อใช้ debug ผลการทำงานของ mosquitto broker
+mosquitto_sub -t house/light1
+
+terminal 4
+รันคำสั่ง pub เพื่อใช้ส่งคำสั่งเปิด/ปิดไฟไปยัง mosquitto broker
+mosquitto_pub -h 0.0.0.0 -m "OFF" -t house/light1
+mosquitto_pub -h 0.0.0.0 -m "ON" -t house/light1
