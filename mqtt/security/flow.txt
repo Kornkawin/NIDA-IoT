@@ -1,0 +1,22 @@
+terminal 1
+รันคำสั่ง start mosquitto service ของเครื่อง mac m1 ที่ใช้ homebrew ในการติดตั้ง mosquitto
+/opt/homebrew/opt/mosquitto/sbin/mosquitto -c <mosquitto_config_file>
+
+terminal 2
+ีรัน simulation ของ raspi
+python3 motion_sensor_sim.py
+
+terminal 3
+รัน collector เพื่อเอา subscribed message มาลง sqlite3
+python3 motion_collector.py
+
+terminal 4
+รันคำสั่ง sub เพื่อใช้ debug ผลการทำงานของ mosquitto broker
+mosquitto_sub -h 127.0.0.1 -p 8883 -t house/motion_sensor -u iot123 -P iot123 --cafile mosquitto_certificates/ca.crt --cert mosquitto_certificates/board001.crt --key mosquitto_certificates/board001.key --insecure
+
+terminal 5
+ลอง Pub ดูว่า terminal 4 ทำงานถูกต้องไหม
+mosquitto_pub -h 127.0.0.1 -p 8883 -m "ACTIVATED" -t house/motion_sensor -u iot123 -P iot123 --cafile mosquitto_certificates/ca.crt --cert mosquitto_certificates/board001.crt --key mosquitto_certificates/board001.key --insecure
+
+Test
+ลองเอา mouse เข้าไปใกล้ sensor จะทำการ insert log ลงฐานข้อมูล
