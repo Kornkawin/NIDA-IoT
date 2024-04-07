@@ -1,0 +1,4 @@
+pillow==9.5.0
+tkgpio==0.1.0
+paho-mqtt==2.0.0
+gpiozero==2.0.1
