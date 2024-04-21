@@ -11,5 +11,13 @@ terminal 3
 python3 temperature_mqtt.py
 
 terminal 4
-รันตัว real-time dashboard โดยใช้ข้อมูลจาก sqlite3
+รันตัว real-time dashboard โดยใช้ข้อมูลจาก sub
 python3 temperature_plotter.py
+
+terminal 5
+ีรันตัวรับค่า sensor จาก arduino ผ่าน serial port แล้ว publish temperature message ไปที่ broker
+python3 temperature_mqtt_arduino.py
+
+terminal 6
+ีรัน analytics โดยใช้ pandas read จาก sqlite3 แล้ว plot กราฟออกมา
+python3 temperature_analytics.py
