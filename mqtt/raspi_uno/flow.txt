@@ -1,0 +1,15 @@
+terminal 1
+รันคำสั่ง start mosquitto service ของเครื่อง mac m1 ที่ใช้ homebrew ในการติดตั้ง mosquitto
+/opt/homebrew/opt/mosquitto/sbin/mosquitto -c <mosquitto_config_file>
+
+terminal 2
+รัน collector เพื่อเอา subscribed message ในรูป json มาเก็บลง sqlite3
+python3 temperature_collector.py
+
+terminal 3
+รัน simulate temperature แล้ว publish temperature message ไปที่ broker
+python3 temperature_mqtt.py
+
+terminal 4
+รันตัว real-time dashboard โดยใช้ข้อมูลจาก sqlite3
+python3 temperature_plotter.py
