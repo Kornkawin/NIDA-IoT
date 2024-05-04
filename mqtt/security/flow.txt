@@ -2,6 +2,11 @@ terminal 1
 รันคำสั่ง start mosquitto service ของเครื่อง mac m1 ที่ใช้ homebrew ในการติดตั้ง mosquitto
 /opt/homebrew/opt/mosquitto/sbin/mosquitto -c <mosquitto_config_file>
 
+In ubuntu, if installed by "sudo apt install mosquitto", use this command to start mosquitto service with config file
+$/usr/sbin/mosquitto -c <mosquitto_config_file>
+see status of mosquitto service
+$sudo systemctl status mosquitto
+
 terminal 2
 ีรัน simulation ของ raspi
 python3 motion_sensor_sim.py
