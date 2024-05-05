@@ -10,10 +10,10 @@
 #define latchPin 12
 #define clockPin 13
 #define temperaturePin A0
-#define gasPin A1
 #include <Servo.h>
 
 Servo servo;
+int garbageState = 0;
 int pos = 90;
 int soundVelocity = 340; // define sound speed = 340 m/s
 byte num[] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90}; // 0-9
@@ -36,8 +36,6 @@ void setup() {
   // Tilt Sensor
   pinMode(tiltPin, INPUT);
   digitalWrite(tiltPin, HIGH);
-  // Gas Sensor
-  pinMode(gasPin, INPUT);
   // Serial
   Serial.begin(9600);
 }
@@ -59,7 +57,7 @@ float getSonarDistance() {
   digitalWrite(trigPin, LOW);
   pingTime = pulseIn(echoPin, HIGH);
   distance = (float)pingTime / 58;
-  // Serial.println(distance);
+  Serial.println(distance);
   return distance; // in cm
 }
 
@@ -73,20 +71,14 @@ float getTemperatureInCelsius() {
 
 bool checkTilt() {
   int isTilt = digitalRead(tiltPin);
-  Serial.println(isTilt);
+  // Serial.println(isTilt);
   return !isTilt;
-}
-
-bool checkSmoke() {
-  int gasState = analogRead(gasPin);
-  //Serial.println(gasState);
-  return gasState > 150;
 }
 
 void openBin() {
   pos = 90;
   servo.write(pos);
-  digitalWrite(ledPin, LOW);
+  digitalWrite(ledPin, LOW);  
 }
 
 void closeBin() {
@@ -96,8 +88,9 @@ void closeBin() {
 }
 
 void loop() {
+  
   int celsius = (int)getTemperatureInCelsius();
-  if (celsius > 60){ //|| checkSmode()) {
+  if (celsius > 60) {
     // heat+smoke
     tone(buzzerPin, 700);
     closeBin();
@@ -109,20 +102,21 @@ void loop() {
     // Normal
     noTone(buzzerPin);
     digitalWrite(ledPin, LOW);
-
+    
     int cm = (int)getSonarDistance();
-    if (cm > 70) displayNum(0);
-    else if (cm > 65) displayNum(1);
-    else if (cm > 60) displayNum(2);
-    else if (cm > 55) displayNum(3);
-    else if (cm > 50) displayNum(4);
-    else if (cm > 45) displayNum(5);
-    else if (cm > 40) displayNum(6);
-    else if (cm > 30) displayNum(7);
-    else if (cm > 20) displayNum(8);
-    else if (cm < 10) displayNum(9);
+    if (cm > 70) garbageState = 0;
+    else if (cm > 65) garbageState = 1; 
+    else if (cm > 60) garbageState = 2;
+    else if (cm > 55) garbageState = 3; 
+    else if (cm > 50) garbageState = 4;  
+    else if (cm > 45) garbageState = 5; 
+    else if (cm > 40) garbageState = 6; 
+    else if (cm > 30) garbageState = 7;  
+    else if (cm > 20) garbageState = 8; 
+    else if (cm < 10) garbageState = 9;
 
-    if (cm < 10) closeBin();
+    displayNum(garbageState);
+    if (garbageState == 9) closeBin();
     else openBin();
   }
 
