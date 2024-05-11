@@ -10,7 +10,6 @@
 #define latchPin 12
 #define clockPin 13
 #define temperaturePin A0
-#define gasPin A1
 #include <Servo.h>
 
 Servo servo;
@@ -36,8 +35,6 @@ void setup() {
   // Tilt Sensor
   pinMode(tiltPin, INPUT);
   digitalWrite(tiltPin, HIGH);
-  // Gas Sensor
-  pinMode(gasPin, INPUT);
   // Serial
   Serial.begin(9600);
 }
@@ -77,12 +74,6 @@ bool checkTilt() {
   return !isTilt;
 }
 
-bool checkSmoke() {
-  int gasState = analogRead(gasPin);
-  //Serial.println(gasState);
-  return gasState > 150;
-}
-
 void openBin() {
   pos = 90;
   servo.write(pos);
@@ -97,7 +88,7 @@ void closeBin() {
 
 void loop() {
   int celsius = (int)getTemperatureInCelsius();
-  if (celsius > 60){ //|| checkSmode()) {
+  if (celsius > 60) {
     // heat+smoke
     tone(buzzerPin, 700);
     closeBin();
