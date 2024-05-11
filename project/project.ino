@@ -91,7 +91,7 @@ void loop() {
   
   int celsius = (int)getTemperatureInCelsius();
   if (celsius > 60) {
-    // heat+smoke
+    // heat
     tone(buzzerPin, 700);
     closeBin();
   } else if (checkTilt()) {
