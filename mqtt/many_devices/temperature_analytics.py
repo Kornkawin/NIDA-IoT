@@ -27,9 +27,9 @@ if __name__ == '__main__':
 
     # Display description of simulation data
     print('===========================================================')
-    print('Device Name: temperature_sim')
+    print('Device Name: board002')
     print('===========================================================')
-    sim_data = df[df['device_name'] == 'temperature_sim']
+    sim_data = df[df['device_name'] == 'board002']
     if sim_data.empty:
         print('No simulation data available')
     else:
@@ -49,17 +49,17 @@ if __name__ == '__main__':
         plt.xticks(rotation=45)
         xfmt = md.DateFormatter('%m-%d %H:%M:%S')
         ax.xaxis.set_major_formatter(xfmt)
-        plt.plot('temperature', data=sim_data, label='temperature_sim')
+        plt.plot('temperature', data=sim_data, label='board002')
         plt.plot('avg', data=sim_data, label='average', linestyle='--', color='red')
         # plt.show()
-        plt.savefig('sim.png')
+        plt.savefig('board002.png')
         plt.close()
 
     # Display description of real data
     print('===========================================================')
-    print('Device Name: temperature_real')
+    print('Device Name: board003')
     print('===========================================================')
-    real_data = df[df['device_name'] == 'temperature_real']
+    real_data = df[df['device_name'] == 'board003']
     if real_data.empty:
         print('No real data available')
     else:
@@ -79,8 +79,8 @@ if __name__ == '__main__':
         plt.xticks(rotation=45)
         xfmt = md.DateFormatter('%m-%d %H:%M:%S')
         ax.xaxis.set_major_formatter(xfmt)
-        plt.plot('temperature', data=real_data, label='temperature_real')
+        plt.plot('temperature', data=real_data, label='board003')
         plt.plot('avg', data=real_data, label='average', linestyle='--', color='red')
         # plt.show()
-        plt.savefig('real.png')
+        plt.savefig('board003.png')
         plt.close()
