@@ -78,19 +78,18 @@ mosquitto_pub -h 127.0.0.1 -p 8883 -m "ACTIVATED" -t factory/temperature_sensor 
 
 terminal 4
 รัน collector เพื่อเอา subscribed message ในรูป json มาเก็บลง sqlite3
-python temperature_collector.py
+python board001_collector.py
 
 
 terminal 5
 รัน simulate temperature แล้ว publish temperature message ไปที่ broker
-python board001_mqtt.py
-python board002_mqtt.py
-python board003_mqtt.py
+python board002_publisher.py
+python board003_publisher.py
 
 
 terminal 6
 รันตัว real-time plotter โดยใช้ข้อมูลจาก sub
-python temperature_plotter.py
+python board001_plotter.py
 
 
 terminal 7
