@@ -1,0 +1,93 @@
+Secure MQTT with TLS/SSL
+=========================
+Generating a private certificate authority to use TLS with Mosquitto
+--------------------------------------------------------------------
+## generate a private certificate authority (CA) key
+$openssl genrsa -out ca.key 2048
+## generate a self-signed certificate from the private CA key
+$openssl req -new -x509 -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=CA/CN=iot.com"
+# see the content of the certificate
+$openssl x509 -in ca.crt -noout -text
+--------------------------------------------------------------------
+Creating a Certificate for the Mosquitto Server
+--------------------------------------------------------------------
+## generate a private key for the server
+$openssl genrsa -out server.key 2048
+## generate a certificate signing request (CSR) from the private server key
+$openssl req -new -key server.key -out server.csr -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=Server/CN=iot.com"
+## generate a self-signed certificate for the server
+$openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -sha256 -days 3650
+--------------------------------------------------------------------
+Configuring TLS transport Security in Mosquitto
+--------------------------------------------------------------------
+$mosquitto_passwd -c password_file iot123
+password: iot123
+$cd /home/<username>/mosquitto
+$echo "listener 8883 0.0.0.0" > mosquitto.conf &&
+    echo "tls_version tlsv1.2" >> mosquitto.conf &&
+    echo "cafile ./mosquitto_certificates/ca.crt" >> mosquitto.conf &&
+    echo "certfile ./mosquitto_certificates/server.crt" >> mosquitto.conf &&
+    echo "keyfile ./mosquitto_certificates/server.key" >> mosquitto.conf &&
+    echo "password_file ./password_file" >> mosquitto.conf &&
+    echo "require_certificate true" >> mosquitto.conf
+--------------------------------------------------------------------
+Creating a Certificate for Each MQTT Client (Device id 001)
+--------------------------------------------------------------------
+## generate a private key for the client
+$openssl genrsa -out board001.key 2048
+## generate a certificate signing request (CSR) from the private client key
+$openssl req -new -key board001.key -out board001.csr -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=Board001/CN=iot.com"
+## generate a self-signed certificate for the client
+$openssl x509 -req -in board001.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out board001.crt -sha256 -days 3650
+##ทำแบบเดียวกันกับ device id 002, 003
+
+# Windows 11 only
+## copy the client certificate and key to the client device from wsl to windows
+wsl$cd /home/<username>/mosquitto
+wsl$cp -r ./mosquitto_certificates /mnt/d/projects/iot/mqtt/many_devices/
+=========================
+
+terminal 1
+รันคำสั่ง start mosquitto service ของเครื่อง mac m1 ที่ใช้ homebrew ในการติดตั้ง mosquitto
+/opt/homebrew/opt/mosquitto/sbin/mosquitto -c <mosquitto_config_file>
+
+In ubuntu, if installed by "sudo apt install mosquitto", use this command to start mosquitto service with config file
+$/usr/sbin/mosquitto -c <mosquitto_config_file>
+see status of mosquitto service
+$sudo systemctl status mosquitto
+
+In Windows 11, install wsl on ubuntu 22.04 by microsoft store,
+then install mosquitto by:
+wsl$sudo apt-get update
+wsl$sudo apt-get install mosquitto
+wsl$sudo apt-get install mosquitto-clients
+Then start mosquitto service by:
+wsl$cd /home/<username>/mosquitto
+wsl$mosquitto -c mosquitto.conf
+
+
+terminal 2
+รันคำสั่ง sub เพื่อใช้ debug ผลการทำงานของ mosquitto broker
+mosquitto_sub -h 127.0.0.1 -p 8883 -t factory/temperature_sensor -u iot123 -P iot123 --cafile mosquitto_certificates/ca.crt --cert mosquitto_certificates/board001.crt --key mosquitto_certificates/board001.key --insecure
+
+
+terminal 3
+ลอง Pub ดูว่า terminal 4 ทำงานถูกต้องไหม
+mosquitto_pub -h 127.0.0.1 -p 8883 -m "ACTIVATED" -t factory/temperature_sensor -u iot123 -P iot123 --cafile mosquitto_certificates/ca.crt --cert mosquitto_certificates/board001.crt --key mosquitto_certificates/board001.key --insecure
+
+
+terminal 4
+รัน collector เพื่อเอา subscribed message ในรูป json มาเก็บลง sqlite3
+python3 temperature_collector.py
+
+terminal 5
+รัน simulate temperature แล้ว publish temperature message ไปที่ broker
+python3 temperature_mqtt.py
+
+terminal 6
+รันตัว real-time plotter โดยใช้ข้อมูลจาก sub
+python3 temperature_plotter.py
+
+terminal 7
+ีรัน analytics โดยใช้ pandas read จาก sqlite3 แล้ว plot กราฟออกมา
+python3 temperature_analytics.py
