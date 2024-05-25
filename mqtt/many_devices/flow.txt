@@ -1,29 +1,35 @@
+In Windows 11, install wsl on ubuntu 22.04 by microsoft store,
+then install mosquitto by:
+wsl$sudo apt-get update
+wsl$sudo apt-get install mosquitto
+wsl$sudo apt-get install mosquitto-clients
+
 Secure MQTT with TLS/SSL
 =========================
 Generating a private certificate authority to use TLS with Mosquitto
 --------------------------------------------------------------------
 ## generate a private certificate authority (CA) key
-$openssl genrsa -out ca.key 2048
+wsl$openssl genrsa -out ca.key 2048
 ## generate a self-signed certificate from the private CA key
-$openssl req -new -x509 -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=CA/CN=iot.com"
+wsl$openssl req -new -x509 -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=CA/CN=iot.com"
 # see the content of the certificate
-$openssl x509 -in ca.crt -noout -text
+wsl$openssl x509 -in ca.crt -noout -text
 --------------------------------------------------------------------
 Creating a Certificate for the Mosquitto Server
 --------------------------------------------------------------------
 ## generate a private key for the server
-$openssl genrsa -out server.key 2048
+wsl$openssl genrsa -out server.key 2048
 ## generate a certificate signing request (CSR) from the private server key
-$openssl req -new -key server.key -out server.csr -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=Server/CN=iot.com"
+wsl$openssl req -new -key server.key -out server.csr -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=Server/CN=iot.com"
 ## generate a self-signed certificate for the server
-$openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -sha256 -days 3650
+wsl$openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -sha256 -days 3650
 --------------------------------------------------------------------
 Configuring TLS transport Security in Mosquitto
 --------------------------------------------------------------------
-$mosquitto_passwd -c password_file iot123
+wsl$mosquitto_passwd -c password_file iot123
 password: iot123
-$cd /home/<username>/mosquitto
-$echo "listener 8883 0.0.0.0" > mosquitto.conf &&
+wsl$cd /home/<username>/mosquitto
+wsl$echo "listener 8883 0.0.0.0" > mosquitto.conf &&
     echo "tls_version tlsv1.2" >> mosquitto.conf &&
     echo "cafile ./mosquitto_certificates/ca.crt" >> mosquitto.conf &&
     echo "certfile ./mosquitto_certificates/server.crt" >> mosquitto.conf &&
@@ -34,11 +40,11 @@ $echo "listener 8883 0.0.0.0" > mosquitto.conf &&
 Creating a Certificate for Each MQTT Client (Device id 001)
 --------------------------------------------------------------------
 ## generate a private key for the client
-$openssl genrsa -out board001.key 2048
+wsl$openssl genrsa -out board001.key 2048
 ## generate a certificate signing request (CSR) from the private client key
-$openssl req -new -key board001.key -out board001.csr -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=Board001/CN=iot.com"
+wsl$openssl req -new -key board001.key -out board001.csr -subj "/C=TH/ST=Bangkok/L=Bangkok/O=NIDA/OU=Board001/CN=iot.com"
 ## generate a self-signed certificate for the client
-$openssl x509 -req -in board001.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out board001.crt -sha256 -days 3650
+wsl$openssl x509 -req -in board001.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out board001.crt -sha256 -days 3650
 ##ทำแบบเดียวกันกับ device id 002, 003
 
 # Windows 11 only
@@ -58,12 +64,7 @@ $sudo systemctl status mosquitto
 stop services when not used
 $sudo systemctl stop mosquitto
 
-In Windows 11, install wsl on ubuntu 22.04 by microsoft store,
-then install mosquitto by:
-wsl$sudo apt-get update
-wsl$sudo apt-get install mosquitto
-wsl$sudo apt-get install mosquitto-clients
-Then start mosquitto service by:
+In windows11 (wsl), start mosquitto service by:
 wsl$cd /home/<username>/mosquitto
 wsl$mosquitto -c mosquitto.conf
 
