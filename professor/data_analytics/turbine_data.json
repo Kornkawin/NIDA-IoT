@@ -1,0 +1,21 @@
+{
+    "Header": {
+        "ID": "Asset123",
+        "SNo": "Gateway456",
+        "AType": 5,
+        "DType": 1,
+        "UID": "Unit789",
+        "Ver": "1.0",
+        "Dflag": "3;1;1;1;100"
+    },
+  "data": [
+    {
+      "rtc": "2022-03-01T10:30:00",
+      "temp": 25.4,
+      "pressure": 1013.25,
+      "wind_speed": 12.3,
+      "rpm": 1500,
+      "energy_output": 1000
+    }
+  ]
+}
