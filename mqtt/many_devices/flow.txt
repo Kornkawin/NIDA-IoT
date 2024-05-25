@@ -55,6 +55,8 @@ In ubuntu, if installed by "sudo apt install mosquitto", use this command to sta
 $/usr/sbin/mosquitto -c <mosquitto_config_file>
 see status of mosquitto service
 $sudo systemctl status mosquitto
+stop services when not used
+$sudo systemctl stop mosquitto
 
 In Windows 11, install wsl on ubuntu 22.04 by microsoft store,
 then install mosquitto by:
